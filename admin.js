@@ -61,7 +61,11 @@ async function init(){
 async function enter(){
  $("login-panel").classList.add("hidden");$("editor").classList.remove("hidden");
  const {data,error}=await sb.from("portfolio_content").select("content").eq("id",1).single();
- if(error){setStatus("save-status","Could not load content. Check your Supabase table and policies.",true);return;}
+ if(error){
+  console.error("Supabase load error:", error);
+  setStatus("save-status", error.message, true);
+  return;
+}
  content=data.content||structuredClone(defaults);renderEditor();
 }
 $("login-form").addEventListener("submit",async e=>{e.preventDefault();setStatus("login-status","Signing in…");const {error}=await sb.auth.signInWithPassword({email:read("email"),password:read("password")});setStatus("login-status",error?error.message:"Signed in.",!!error)});
